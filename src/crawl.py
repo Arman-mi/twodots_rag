@@ -24,11 +24,14 @@ class Page:
     content_type: str
     html: str
 
+#makes sure we only crawl pages from the same site, and avoid wandering off into the net.
 def is_same_site(url: str, allowed_netloc: str) -> bool:
     try:
         return urlparse(url).netloc == allowed_netloc
     except Exception:
         return False
+    
+#normalizes raw links from html into absolute URLs    
 
 def normalize_url(base: str, href: str) -> str | None:
     if not href:
@@ -40,6 +43,7 @@ def normalize_url(base: str, href: str) -> str | None:
     full, _frag = urldefrag(full)
     return full
 
+#checks if a URL should be skipped or not
 def should_skip(url: str) -> bool:
     p = urlparse(url)
     if p.scheme not in ("http", "https"):
@@ -51,6 +55,8 @@ def should_skip(url: str) -> bool:
         return True
     return False
 
+
+#in this function we download 1 page with a GET request that we send
 def fetch(session: requests.Session, url: str, timeout: int = 20) -> Page | None:
     r = session.get(url, headers=DEFAULT_HEADERS, timeout=timeout, allow_redirects=True)
     ct = r.headers.get("content-type", "")

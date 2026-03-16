@@ -64,6 +64,7 @@ def fetch(session: requests.Session, url: str, timeout: int = 20) -> Page | None
         return None
     return Page(url=r.url, status=r.status_code, content_type=ct, html=r.text)
 
+#this function extracts all links from the HTML content of a page
 def extract_links(base_url: str, html: str) -> list[str]:
     soup = BeautifulSoup(html, "lxml")
     links = []
@@ -72,6 +73,10 @@ def extract_links(base_url: str, html: str) -> list[str]:
         if u:
             links.append(u)
     return links
+
+
+
+#the main crawler
 
 def crawl_site(
     start_url: str,

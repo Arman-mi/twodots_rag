@@ -16,15 +16,18 @@ class Chunk:
     text: str
     chunk_id: str
 
+
 def get_title(html: str) -> str:
     soup = BeautifulSoup(html, "lxml")
     t = soup.title.string.strip() if soup.title and soup.title.string else ""
     return t
 
+#uses hashing to assign IDs
 def stable_id(url: str, text: str) -> str:
     h = hashlib.sha256((url + "\n" + text).encode("utf-8")).hexdigest()[:16]
     return h
 
+#splits texts into smaller chunks if its too big.
 def split_text(text: str, max_chars: int = 2400) -> list[str]:
     # simple paragraph-based splitter (good enough for V1)
     paras = [p.strip() for p in text.split("\n") if p.strip()]
@@ -55,6 +58,8 @@ def html_to_main_text(html: str) -> str | None:
     cleaned = "\n".join([ln.strip() for ln in extracted.splitlines() if ln.strip()])
     return cleaned if len(cleaned) > 200 else None  # ignore near-empty pages
 
+
+#this is the main pipeline function, it reads raw pages and writes clean chuncks
 def build_chunks(
     raw_pages_path: str = "data/raw_pages.jsonl",
     out_chunks_path: str = "data/chunks.jsonl",

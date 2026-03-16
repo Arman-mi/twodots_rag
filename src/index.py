@@ -15,6 +15,8 @@ def iter_chunks(path: str):
         for line in f:
             yield json.loads(line)
 
+
+#builds vector index from the cleaned chunks
 def build_index(
     chunks_path: str = "data/chunks.jsonl",
     persist_dir: str = "data/chroma",

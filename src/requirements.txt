@@ -7,3 +7,4 @@ python-dotenv
 chromadb
 openai
 tiktoken
+lxml[html_clean]

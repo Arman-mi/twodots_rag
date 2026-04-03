@@ -1,16 +1,19 @@
-const API_BASE = "https://onrender.com";
+const API_BASE = "http://127.0.0.1:8000";
 
 const form = document.getElementById("chat-form");
 const input = document.getElementById("message-input");
 const chat = document.getElementById("chat");
 
+
+
 function addMessage(text, role, citations = []) {
   const wrapper = document.createElement("div");
   wrapper.className = `message ${role}`;
 
-  const textNode = document.createElement("div");
-  textNode.textContent = text;
-  wrapper.appendChild(textNode);
+  const body = document.createElement("div");
+  body.className = "message-body";
+  body.textContent = typeof text === "string" ? text : JSON.stringify(text, null, 2);
+  wrapper.appendChild(body);
 
   if (citations.length > 0) {
     const cites = document.createElement("div");
@@ -36,17 +39,20 @@ function addMessage(text, role, citations = []) {
   chat.appendChild(wrapper);
   chat.scrollTop = chat.scrollHeight;
 }
-
 async function sendMessage(message) {
+  console.log("sending message:", message, typeof message);
+
   const res = await fetch(`${API_BASE}/api/chat`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ message }),
+    body: JSON.stringify({ message: message }),
   });
 
   if (!res.ok) {
+    const text = await res.text();
+    console.error("backend response:", text);
     throw new Error(`HTTP ${res.status}`);
   }
 
@@ -72,7 +78,9 @@ form.addEventListener("submit", async (e) => {
   try {
     const data = await sendMessage(message);
     loadingEl.remove();
-    addMessage(data.answer, "assistant", data.citations || []);
+    console.log("frontend received:", data);
+    console.log("answer field =", data.answer, typeof data.answer);
+    addMessage(data.response, "assistant", data.citations || []);
   } catch (err) {
     loadingEl.remove();
     addMessage("Something went wrong talking to the API.", "assistant");

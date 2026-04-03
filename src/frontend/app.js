@@ -1,4 +1,4 @@
-const API_BASE = "https://twodots-rag.onrender.com/";
+const API_BASE = "https://twodots-rag.onrender.com";
 
 const form = document.getElementById("chat-form");
 const input = document.getElementById("message-input");
